@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Ambient Glow Shadow -->
+    <path
+        android:fillColor="#1A5C5CFF"
+        android:pathData="M54,18 A32,32 0 1,1 53.9,18 z" />
+
+    <!-- Left Alarm Bell Hammer -->
+    <path
+        android:fillColor="#FFE5C060"
+        android:pathData="M24.5,23 C20.5,27 18.5,33 18.5,33 L30.5,36 L32.5,30 C32.5,30 28.5,19 24.5,23 Z" />
+
+    <!-- Right Alarm Bell Hammer -->
+    <path
+        android:fillColor="#FFE5C060"
+        android:pathData="M83.5,23 C87.5,27 89.5,33 89.5,33 L77.5,36 L75.5,30 C75.5,30 79.5,19 83.5,23 Z" />
+
+    <!-- Center Clock Bezel -->
+    <path
+        android:fillColor="#FF24252C"
+        android:strokeColor="#FFE5C060"
+        android:strokeWidth="4"
+        android:pathData="M54,23 A27,27 0 1,1 53.9,23 z" />
+
+    <!-- Golden Clock Face Inner Rim -->
+    <path
+        android:fillColor="#FF0D0D0E"
+        android:pathData="M54,28 A22,22 0 1,1 53.9,28 z" />
+
+    <!-- Echo Sound Waves (Left) -->
+    <path
+        android:strokeColor="#FF00FFE0"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M16.5,41 C11.5,49 11.5,59 16.5,67 " />
+    <path
+        android:strokeColor="#FF00FFE0"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M8.5,46 C4.5,52 4.5,58 8.5,64 " />
+
+    <!-- Echo Sound Waves (Right) -->
+    <path
+        android:strokeColor="#FF00FFE0"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M91.5,41 C96.5,49 96.5,59 91.5,67 " />
+    <path
+        android:strokeColor="#FF00FFE0"
+        android:strokeWidth="2.5"
+        android:strokeLineCap="round"
+        android:pathData="M99.5,46 C103.5,52 103.5,58 99.5,64 " />
+
+    <!-- Hour and Minute Hands -->
+    <path
+        android:strokeColor="#FFFFFCF0"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M54,50 L54,36" />
+    <path
+        android:strokeColor="#FFE5C060"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"
+        android:pathData="M54,50 L66,54" />
+
+    <!-- Clock Center Pin -->
+    <path
+        android:fillColor="#FF00E5FF"
+        android:pathData="M54,46a4,4 0 1,1 -0.01,0z" />
+
+    <!-- Support legs -->
+    <path
+        android:strokeColor="#FFE5C060"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:pathData="M33,74 L25,82" />
+    <path
+        android:strokeColor="#FFE5C060"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"
+        android:pathData="M75,74 L83,82" />
+
+</vector>

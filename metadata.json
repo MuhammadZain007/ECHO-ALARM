@@ -1,0 +1,6 @@
+{
+  "name": "Echo Alarm",
+  "description": "Premium Alarm Clock App with Custom AI Voice Alarms, Bedtime Mode, Themes and Alarm Challenges.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
