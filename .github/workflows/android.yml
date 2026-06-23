@@ -34,7 +34,8 @@ jobs:
             echo "Decoding debug.keystore.base64..."
             base64 -d debug.keystore.base64 > debug.keystore
           else
-            echo "No debug.keystore.base64 found. Building with fallback keys..."
+            echo "No debug.keystore.base64 found. Generating a temporary debug.keystore..."
+            keytool -genkeypair -v -keystore debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
           fi
 
       - name: Build Debug APK
