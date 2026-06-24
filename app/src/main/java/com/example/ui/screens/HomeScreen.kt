@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -211,6 +212,41 @@ fun HomeScreen(
         }
 
         Spacer(modifier = Modifier.weight(1f))
+
+        // Test Notification Action
+        val context = LocalContext.current
+        Button(
+            onClick = {
+                com.example.service.NotificationHelper.showAlarmNotification(
+                    context = context,
+                    alarmId = 9999,
+                    alarmLabel = "Test Echo Alarm 🔔"
+                )
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f),
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+            ),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .border(1.dp, MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+                .testTag("test_notification_button")
+        ) {
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                contentDescription = "Test Notification",
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "TEST SYSTEM NOTIFICATION",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
+        }
 
         // Quick Alarm Presets panel
         Column(

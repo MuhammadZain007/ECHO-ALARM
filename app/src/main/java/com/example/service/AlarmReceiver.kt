@@ -21,6 +21,9 @@ class AlarmReceiver : BroadcastReceiver() {
             }
             context.startActivity(launchIntent)
             
+            // Show system heads-up notification
+            NotificationHelper.showAlarmNotification(context, alarmId, alarmLabel)
+            
             // Also notify any active state instance (if MainActivity is already running,
             // we can handle this via custom broadcast or single-top intents in MainActivity)
             val updateIntent = Intent("com.example.echoalarm.ALARM_TRIGGERED").apply {

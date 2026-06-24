@@ -674,6 +674,8 @@ class EchoAlarmViewModel(application: Application) : AndroidViewModel(applicatio
         if (currentAlarm != null) {
             tts?.stop()
             stopAnyMediaPlayers()
+            // Dismiss active notification
+            com.example.service.NotificationHelper.cancelNotification(getApplication(), currentAlarm.id)
             _activeRingerAlarm.value = null
             
             // Set simple alert notification to fire in selected minutes
@@ -694,6 +696,8 @@ class EchoAlarmViewModel(application: Application) : AndroidViewModel(applicatio
         if (currentAlarm != null) {
             tts?.stop()
             stopAnyMediaPlayers()
+            // Dismiss active notification
+            com.example.service.NotificationHelper.cancelNotification(getApplication(), currentAlarm.id)
             _activeRingerAlarm.value = null
             
             // Handle day advancement if repeating alarm

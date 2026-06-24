@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.service.NotificationHelper
 import com.example.ui.EchoAlarmViewModel
 import com.example.ui.screens.*
 import com.example.ui.theme.EchoAlarmTheme
@@ -49,9 +50,23 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // Register launcher for post notification permission requests (Android 13+)
+    private val requestNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Log.d("MainActivity", "Notification permission granted.")
+        } else {
+            Log.w("MainActivity", "Notification permission denied.")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Create the notification channel
+        NotificationHelper.createNotificationChannel(this)
 
         // Check and ask for recording permission
         if (ContextCompat.checkSelfPermission(
@@ -60,6 +75,17 @@ class MainActivity : ComponentActivity() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        }
+
+        // Check and ask for notification permission on Android 13+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
         }
 
         setContent {
