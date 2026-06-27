@@ -2,6 +2,7 @@ package com.example.ui
 
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -91,10 +92,6 @@ class EchoAlarmViewModel(application: Application) : AndroidViewModel(applicatio
     private var mediaPlayer: MediaPlayer? = null
     private val _isPlayingPreview = MutableStateFlow(false)
     val isPlayingPreview: StateFlow<Boolean> = _isPlayingPreview.asStateFlow()
-
-    // Dedicated Alarm Ringtone and Vibrator
-    private var alarmRingtonePlayer: MediaPlayer? = null
-    private var vibrator: Vibrator? = null
 
     // Bedtime Sound Synthesis system
     private val _relaxingSoundPlaying = MutableStateFlow<String?>(null) // "Rain", "Ocean", "Forest", "White Noise", or null
@@ -588,84 +585,28 @@ class EchoAlarmViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun startAlarmRingtoneAndVibration(isGradual: Boolean) {
-        stopAlarmRingtoneAndVibration() // Clean any existing first
-        val initialVolume = if (isGradual) 0.1f else 1.0f
-
-        // 1. Play the default alarm or ringtone sound
-        try {
-            val ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-                ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-
-            alarmRingtonePlayer = MediaPlayer().apply {
-                setDataSource(getApplication(), ringtoneUri)
-                setAudioStreamType(AudioManager.STREAM_ALARM)
-                isLooping = true
-                prepare()
-                setVolume(initialVolume, initialVolume)
-                start()
-            }
-            Log.d("EchoAlarmVM", "Alarm ringtone started successfully with volume $initialVolume.")
-        } catch (e: Exception) {
-            Log.e("EchoAlarmVM", "Failed to play default alarm ringtone: ${e.message}")
-            // Fallback ringtone
-            try {
-                alarmRingtonePlayer = MediaPlayer.create(getApplication(), android.provider.Settings.System.DEFAULT_RINGTONE_URI)?.apply {
-                    isLooping = true
-                    setVolume(initialVolume, initialVolume)
-                    start()
-                }
-            } catch (ex: Exception) {
-                Log.e("EchoAlarmVM", "Fallback ringtone also failed: ${ex.message}")
-            }
+        val context = getApplication<Application>()
+        val serviceIntent = Intent(context, com.example.service.AlarmService::class.java).apply {
+            putExtra("ALARM_ID", _activeRingerAlarm.value?.id ?: 9999)
+            putExtra("ALARM_LABEL", _activeRingerAlarm.value?.label ?: "Echo Alarm")
         }
-
-        // 2. Start looping vibration pattern
         try {
-            vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val vibratorManager = getApplication<Application>().getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
-                vibratorManager?.defaultVibrator
-            } else {
-                @Suppress("DEPRECATION")
-                getApplication<Application>().getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
-            }
-
-            vibrator?.let { v ->
-                if (v.hasVibrator()) {
-                    val pattern = longArrayOf(0, 1000, 1000) // Vibrate 1s, pause 1s
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        v.vibrate(VibrationEffect.createWaveform(pattern, 0)) // 0 means loop from index 0
-                    } else {
-                        @Suppress("DEPRECATION")
-                        v.vibrate(pattern, 0)
-                    }
-                    Log.d("EchoAlarmVM", "Vibration pattern started.")
-                }
-            }
+            androidx.core.content.ContextCompat.startForegroundService(context, serviceIntent)
+            Log.d("EchoAlarmVM", "startAlarmRingtoneAndVibration delegated to AlarmService.")
         } catch (e: Exception) {
-            Log.e("EchoAlarmVM", "Failed to start vibration: ${e.message}")
+            Log.e("EchoAlarmVM", "Failed to delegate to AlarmService: ${e.message}")
         }
     }
 
     private fun stopAlarmRingtoneAndVibration() {
+        val context = getApplication<Application>()
         try {
-            alarmRingtonePlayer?.let {
-                if (it.isPlaying) {
-                    it.stop()
-                }
-                it.release()
-            }
+            val serviceIntent = Intent(context, com.example.service.AlarmService::class.java)
+            context.stopService(serviceIntent)
+            Log.d("EchoAlarmVM", "stopAlarmRingtoneAndVibration stopped AlarmService.")
         } catch (e: Exception) {
-            Log.e("EchoAlarmVM", "Failed to stop alarm ringtone: ${e.message}")
+            Log.e("EchoAlarmVM", "Failed to stop AlarmService: ${e.message}")
         }
-        alarmRingtonePlayer = null
-
-        try {
-            vibrator?.cancel()
-        } catch (e: Exception) {
-            Log.e("EchoAlarmVM", "Failed to cancel vibration: ${e.message}")
-        }
-        vibrator = null
     }
 
     private fun startGradualRiseLoops(alarm: Alarm) {
@@ -692,12 +633,6 @@ class EchoAlarmViewModel(application: Application) : AndroidViewModel(applicatio
                 if (alarm.isGradualVolume && ringerVolume.value < 1.0f) {
                     ringerVolume.value += 0.15f
                     ringerVibrationIntensity.value += 0.15f
-                    // Dynamically set volume on the ringtone player
-                    try {
-                        alarmRingtonePlayer?.setVolume(ringerVolume.value, ringerVolume.value)
-                    } catch (e: Exception) {
-                        Log.e("EchoAlarmVM", "Failed to update gradual volume: ${e.message}")
-                    }
                 }
             }
         }

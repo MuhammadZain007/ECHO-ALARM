@@ -29,7 +29,7 @@ object NotificationHelper {
         }
     }
 
-    fun showAlarmNotification(context: Context, alarmId: Int, alarmLabel: String) {
+    fun buildAlarmNotification(context: Context, alarmId: Int, alarmLabel: String): android.app.Notification {
         // First ensure channel is created
         createNotificationChannel(context)
 
@@ -48,7 +48,7 @@ object NotificationHelper {
         )
 
         // Build notification
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
             .setContentTitle("Echo Alarm: $alarmLabel")
             .setContentText("It is time! Tap to snooze or dismiss.")
@@ -58,9 +58,13 @@ object NotificationHelper {
             .setAutoCancel(true)
             .setFullScreenIntent(pendingIntent, true) // Makes it show up over lock screen/heads-up
             .setOngoing(true) // Keeps it from being easily swiped away
+            .build()
+    }
 
+    fun showAlarmNotification(context: Context, alarmId: Int, alarmLabel: String) {
+        val notification = buildAlarmNotification(context, alarmId, alarmLabel)
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-        notificationManager?.notify(alarmId, builder.build())
+        notificationManager?.notify(alarmId, notification)
         Log.d("NotificationHelper", "Posted notification for Alarm ID: $alarmId")
     }
 
